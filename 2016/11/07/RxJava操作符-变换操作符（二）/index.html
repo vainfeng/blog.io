@@ -1,0 +1,758 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vain/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vain/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/vain/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/vain/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="buffer看名字也知道这个操作符跟缓存有关。恩，这个操作符就是会吧Observable的数据几个几个的打包，之后再发射。这个几个就是在使用这个操作符的时候我们调用者传入的参数。这么说可能还是有点抽象，我们来写个demo：
+123Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)                .buffer(3)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava操作符---变换操作符（二）">
+<meta property="og:url" content="https://vainfeng.github.io/vain/2016/11/07/RxJava操作符-变换操作符（二）/index.html">
+<meta property="og:site_name" content="疯子的小站">
+<meta property="og:description" content="buffer看名字也知道这个操作符跟缓存有关。恩，这个操作符就是会吧Observable的数据几个几个的打包，之后再发射。这个几个就是在使用这个操作符的时候我们调用者传入的参数。这么说可能还是有点抽象，我们来写个demo：
+123Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)                .buffer(3)">
+<meta property="og:updated_time" content="2016-12-05T08:14:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJava操作符---变换操作符（二）">
+<meta name="twitter:description" content="buffer看名字也知道这个操作符跟缓存有关。恩，这个操作符就是会吧Observable的数据几个几个的打包，之后再发射。这个几个就是在使用这个操作符的时候我们调用者传入的参数。这么说可能还是有点抽象，我们来写个demo：
+123Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)                .buffer(3)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/vain/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://vainfeng.github.io/vain/2016/11/07/RxJava操作符-变换操作符（二）/"/>
+
+
+
+
+
+  <title> RxJava操作符---变换操作符（二） | 疯子的小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/vain/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">疯子的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">永远有人比你更努力</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/vain/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/vain/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/vain/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/vain/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://vainfeng.github.io/vain/vain/2016/11/07/RxJava操作符-变换操作符（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="疯子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/vain/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯子的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RxJava操作符---变换操作符（二）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-07T16:58:43+08:00">
+                2016-11-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/vain/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="buffer"><a href="#buffer" class="headerlink" title="buffer"></a>buffer</h3><p>看名字也知道这个操作符跟缓存有关。恩，这个操作符就是会吧<code>Observable</code>的数据几个几个的打包，之后再发射。这个几个就是在使用这个操作符的时候我们调用者传入的参数。<br>这么说可能还是有点抽象，我们来写个demo：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</div><div class="line">                .buffer(3)</div><div class="line">                .subscribe(i -&gt; Log.d(TAG, &quot;buffer :&quot; + i));</div></pre></td></tr></table></figure>
+<p>上面这段代码的输出是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">buffer : [1, 2, 3]</div><div class="line">buffer : [4 ,5, 6]</div><div class="line">buffer : [7, 8, 9]</div><div class="line">buffer : [10]</div></pre></td></tr></table></figure>
+<p>是不是一下就明白了？ </p>
+<p><code>buffer</code>操作符还有一个重载，不光传入一个缓存个数，还传入一个skip的参数。这个skip就是每隔几个数据打包数据的意思。如果我们将上面的<code>buffer</code>使用</p>
+<pre><code>buffer(3,2).subscribe({....})
+</code></pre><p>我们来看看结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">buffer : [1, 2, 3]</div><div class="line">buffer : [3, 4, 5]</div><div class="line">buffer : [5, 6, 7]</div><div class="line">buffer : [7, 8, 9]</div><div class="line">buffer : [9,10]</div></pre></td></tr></table></figure></p>
+<p>每隔2个数据，打包三个数据。就是这么个意思啦。</p>
+<h3 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h3><p><code>FlatMap</code>将一个发射数据的<code>Observable</code>变换为多个<code>Observable</code>，然后将它们发射的数据合并后放进一个单独的<code>Observable</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Integer[] arrays = new Integer[]&#123;1, 2, 3, 4, 5, 6, 7, 8, 9, 10&#125;;</div><div class="line">        Observable.from(arrays)</div><div class="line">                .flatMap(new Func1&lt;Integer, Observable&lt;?&gt;&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public Observable&lt;?&gt; call(Integer integer) &#123;</div><div class="line">                        return Observable.just(&quot;flatMap  &quot; + integer).subscribeOn(Schedulers.newThread());</div><div class="line">                    &#125;</div><div class="line">                &#125;).subscribe(i -&gt; Log.d(TAG, i.toString()))</div></pre></td></tr></table></figure>
+<p>这里的输出是 ： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">flatMap  1</div><div class="line">... // 这里不一定是按顺序的哦,可能会乱序</div><div class="line">flatMap  10</div></pre></td></tr></table></figure>
+<p>各位同学可以看到，在这个操作符的返回中，返回的是一个新的<code>Observable</code>。符合它的定义啊，将一个发射数据的<code>Observable</code>变换为多个<code>Observable</code>，这里我们数据的长度是10，就会生成10个新的<code>Observable</code>。</p>
+<p>又会有同学问了，为什么我在操作符中去生成一个新的<code>Observable</code>的时候后面要加上：</p>
+<pre><code>.subscribeOn(Schedulers.newThread());
+</code></pre><p>这也是我准备跟大家说的一个很重要的注意事项。通常我们在使用的<code>flatMap</code>的时候，肯定是会将原始的数据加工成另外我们所需的数据再往下传递下去（比如传入的是一个id，要去查询数据库这个id对应的数据等等…）。这个工作肯定我们是要放到一个新的线程去做才合理的。</p>
+<p>那么同时，<code>flatMap</code>的特点就是不保证每一个新生成的<code>Observable</code>产生的顺序，由于源码中对发射过来的数据是做的<code>merge</code>操作，所以不保证顺序。</p>
+<h4 id="concatMap"><a href="#concatMap" class="headerlink" title="concatMap"></a>concatMap</h4><p>这个操作符类似最简单版本的<code>flatMap</code>，但是唯一的不同就是这个操作符发射的数据是依次发射的。所以这也是它存在的原因。例子同上，我这里就不重复写了。</p>
+<h3 id="map"><a href="#map" class="headerlink" title="map"></a>map</h3><p>这个操作符使用到的地方还是蛮多的。<br>这个操作符对原始<code>Observable</code>发射的每一项数据应用一个你选择的函数，然后返回一个发射这些结果的<code>Observable</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Observable.just(1, 2, 3)</div><div class="line">               .map(new Func1&lt;Integer, String&gt;() &#123;</div><div class="line">                   @Override</div><div class="line">                   public String call(Integer integer) &#123;</div><div class="line">                       return integer + &quot;a&quot;;</div><div class="line">                   &#125;</div><div class="line">               &#125;).subscribe(new Subscriber&lt;String&gt;() &#123;</div><div class="line">           @Override</div><div class="line">           public void onCompleted() &#123;</div><div class="line">               Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">           &#125;</div><div class="line">           @Override</div><div class="line">           public void onError(Throwable e) &#123;</div><div class="line"></div><div class="line">           &#125;</div><div class="line">           @Override</div><div class="line">           public void onNext(String o) &#123;</div><div class="line">               Log.d(TAG, o);</div><div class="line">           &#125;</div><div class="line">       &#125;);</div></pre></td></tr></table></figure>
+<p>输出 ： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">1a</div><div class="line">2a</div><div class="line">3a</div><div class="line">onCompleted</div></pre></td></tr></table></figure>
+<p><code>map</code>操作符接受一个Fun1的参数，两个泛型，一个是参数的类型，一个是函数的返回值的类型。一般参数的类型，初始于我们的发射的数据源，这个不太好变，我们在用这个操作符的时候，更多需要关注第二个泛型，你想要返回的类型。</p>
+<p>这个操作符默认不在任何特定的调度器上执行。如果需要，可以通过<code>observeOn</code>函数指定函数的工作线程。</p>
+<h4 id="cast"><a href="#cast" class="headerlink" title="cast"></a>cast</h4><p>讲到<code>map</code>这个操作符，顺带提一下<code>cast</code>这个特殊的<code>map</code>操作符。</p>
+<p><code>cast</code>操作符，是将原始的发射的每一项数据都强制转换为一个指定的类型，然后继续发射。</p>
+<p>恩，使用的场景不是很多。所以，大概知道一下。</p>
+<h3 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h3><p>这个操作符将一个<code>Observable</code>分拆为一些<code>Observables</code>集合，它们中的每一个发射原始<code>Observable</code>的一个子序列。</p>
+<p>To be continue….</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>西兰花和鸡胸肉价格都涨了！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="http://ofqyh3mgg.bkt.clouddn.com/wechat.jpeg" alt="疯子 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="http://ofqyh3mgg.bkt.clouddn.com/aliPay.jpeg" alt="疯子 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/vain/2016/10/28/RxJava操作符---创建操作符（一）/" rel="next" title="RxJava操作符---创建操作符（一）">
+                <i class="fa fa-chevron-left"></i> RxJava操作符---创建操作符（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/vain/2016/11/09/关于Git协作，除了知道merge，你可能还需要知道rebase/" rel="prev" title="关于Git协作，除了知道merge，你可能还需要知道rebase">
+                关于Git协作，除了知道merge，你可能还需要知道rebase <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/vain/images/avatar.gif"
+               alt="疯子" />
+          <p class="site-author-name" itemprop="name">疯子</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个搞事的程序猿</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/vain/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#buffer"><span class="nav-number">1.</span> <span class="nav-text">buffer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flatMap"><span class="nav-number">2.</span> <span class="nav-text">flatMap</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#concatMap"><span class="nav-number">2.1.</span> <span class="nav-text">concatMap</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map"><span class="nav-number">3.</span> <span class="nav-text">map</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cast"><span class="nav-number">3.1.</span> <span class="nav-text">cast</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#groupBy"><span class="nav-number">4.</span> <span class="nav-text">groupBy</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯子</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/vain/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/vain/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

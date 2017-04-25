@@ -1,0 +1,785 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vain/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vain/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/vain/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/vain/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前提：配置好JAVA环境。
+APKTool的方式
+下载地址
+下载下来后直接是一个jar文件，将这个jar文件放入一个文件夹下，将目标APK也一同方式该文件夹下。
+打开终端，cd进入该文件夹执行：
+
+1java -jar apktool.jar d xxx.apk
+xxx.apk 就是目标APK的完整的文件名。如果输出正确则会得到类似这样的输出
+
+注意:apkTool下载下来后，默认是带上了版本号的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APK 反编译 in MAC OS">
+<meta property="og:url" content="https://vainfeng.github.io/vain/2016/10/25/APK 反编译 in MAC OS/index.html">
+<meta property="og:site_name" content="疯子的小站">
+<meta property="og:description" content="前提：配置好JAVA环境。
+APKTool的方式
+下载地址
+下载下来后直接是一个jar文件，将这个jar文件放入一个文件夹下，将目标APK也一同方式该文件夹下。
+打开终端，cd进入该文件夹执行：
+
+1java -jar apktool.jar d xxx.apk
+xxx.apk 就是目标APK的完整的文件名。如果输出正确则会得到类似这样的输出
+
+注意:apkTool下载下来后，默认是带上了版本号的">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/APKtool.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/APKTool2.png">
+<meta property="og:updated_time" content="2016-11-09T02:54:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APK 反编译 in MAC OS">
+<meta name="twitter:description" content="前提：配置好JAVA环境。
+APKTool的方式
+下载地址
+下载下来后直接是一个jar文件，将这个jar文件放入一个文件夹下，将目标APK也一同方式该文件夹下。
+打开终端，cd进入该文件夹执行：
+
+1java -jar apktool.jar d xxx.apk
+xxx.apk 就是目标APK的完整的文件名。如果输出正确则会得到类似这样的输出
+
+注意:apkTool下载下来后，默认是带上了版本号的">
+<meta name="twitter:image" content="http://ofqyh3mgg.bkt.clouddn.com/APKtool.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/vain/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://vainfeng.github.io/vain/2016/10/25/APK 反编译 in MAC OS/"/>
+
+
+
+
+
+  <title> APK 反编译 in MAC OS | 疯子的小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/vain/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">疯子的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">永远有人比你更努力</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/vain/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/vain/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/vain/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/vain/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://vainfeng.github.io/vain/vain/2016/10/25/APK 反编译 in MAC OS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="疯子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/vain/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯子的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                APK 反编译 in MAC OS
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-25T00:00:00+08:00">
+                2016-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/vain/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前提：配置好JAVA环境。</p>
+<h2 id="APKTool的方式"><a href="#APKTool的方式" class="headerlink" title="APKTool的方式"></a>APKTool的方式</h2><ol>
+<li><a href="https://bitbucket.org/iBotPeaches/apktool/downloads" target="_blank" rel="external">下载地址</a></li>
+<li>下载下来后直接是一个<code>jar</code>文件，将这个<code>jar</code>文件放入一个文件夹下，将目标APK也一同方式该文件夹下。</li>
+<li>打开终端，<code>cd</code>进入该文件夹执行：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar apktool.jar d xxx.apk</div></pre></td></tr></table></figure>
+<p>xxx.apk 就是目标APK的完整的文件名。如果输出正确则会得到类似这样的输出</p>
+<p><img src="http://ofqyh3mgg.bkt.clouddn.com/APKtool.png" alt="apkTool"></p>
+<p><code>注意:</code>apkTool下载下来后，默认是带上了版本号的。也就是说你实际下载下载的文件名称的格式是：apktool_2.x.x.jar。在实际执行上面命令的过程中<code>-jar</code>后面的名称实际指的是完整的文件名称。在不修改文件名称的情况下，命令应该写成：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar apktool_2.x.x.jar d [目标APK]</div></pre></td></tr></table></figure>
+<p>命令执行之后你会得到跟APK同名的一个文件夹，这个文件夹大概长这个样子</p>
+<p><img src="http://ofqyh3mgg.bkt.clouddn.com/APKTool2.png" alt="文件目录"></p>
+<h2 id="dex2jar-amp-jd-gui的方式"><a href="#dex2jar-amp-jd-gui的方式" class="headerlink" title="dex2jar &amp; jd-gui的方式"></a>dex2jar &amp; jd-gui的方式</h2><ol>
+<li><a href="https://github.com/pxb1988/dex2jar" target="_blank" rel="external">dex2jar的下载地址</a>请选择从<code>sourceforge</code>下载或者<code>bitbucket</code>下载。</li>
+<li><a href="http://jd.benow.ca/" target="_blank" rel="external">jd-gui的下载地址</a>点击界面的Download,选择你的计算机的运行环境。这里我们选择Mac。</li>
+<li>dex2jar下载完成后得到一个zip文件，解压后得到一个目录，目录下有一堆<code>.bat</code>和<code>.sh</code>后缀的文件。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">如果是windows系统，执行bat文件.</div><div class="line">而MAC系统则调用sh脚本即可</div></pre></td></tr></table></figure>
+<ol>
+<li>将目标的APK文件后缀改为zip并解压，得到中的classes.dex文件。将这个文件copy到dex2jar解压后的目录下。</li>
+<li><code>cd</code> 到dex2jar解压后的目录，执行：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">sh d2j-dex2jar.sh classes.dex</div><div class="line"></div><div class="line">如果提示Permission denied,则执行：</div><div class="line"></div><div class="line">chmod +x d2j-dex2jar.sh d2j_invoke.sh</div><div class="line"></div><div class="line">然后再次执行上面的命令即可</div></pre></td></tr></table></figure>
+<ol>
+<li>命令执行成功后，在该目录下得到一个<code>classes-dex2jar.jar</code>文件。</li>
+<li>解压下载的jd-gui<code>tar</code>文件，得到一个<code>.app</code>文件，打开是一个图形界面的窗口，将我们得到的<code>classes-dex2jar.jar</code>文件导入这个图形界面打开就可以正常浏览了。</li>
+</ol>
+<p>打完收工~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>西兰花和鸡胸肉价格都涨了！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="http://ofqyh3mgg.bkt.clouddn.com/wechat.jpeg" alt="疯子 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="http://ofqyh3mgg.bkt.clouddn.com/aliPay.jpeg" alt="疯子 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/vain/2016/10/25/从Launch进入后重新闪屏的Bug/" rel="next" title="从Launch进入后重新闪屏的Bug">
+                <i class="fa fa-chevron-left"></i> 从Launch进入后重新闪屏的Bug
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/vain/2016/10/27/常用ADB命令/" rel="prev" title="常用ADB命令">
+                常用ADB命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/vain/images/avatar.gif"
+               alt="疯子" />
+          <p class="site-author-name" itemprop="name">疯子</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个搞事的程序猿</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/vain/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#APKTool的方式"><span class="nav-number">1.</span> <span class="nav-text">APKTool的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dex2jar-amp-jd-gui的方式"><span class="nav-number">2.</span> <span class="nav-text">dex2jar & jd-gui的方式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯子</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/vain/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/vain/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

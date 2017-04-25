@@ -1,0 +1,844 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vain/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vain/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/vain/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/vain/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="开篇之前，我们来说说Git这个东西。至于Git是个什么东西这种问题，我相信不用我说，点开这篇文章的你应该知道的。但是这里，我也不赶尽杀绝，用一句简单粗暴的概念简单介绍一下 ： 
+Git，是一个版本管理工具。
+那么关于Git的基本使用和一些基础概念，这里不是本文讨论的重点。本文也不是一篇Git的科普文，教你Git怎么用啊，环境怎么搭建啊，用Git有什么好处啊…..这种问题。如果你有这种问题，请关闭此">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Git协作，除了知道merge，你可能还需要知道rebase">
+<meta property="og:url" content="https://vainfeng.github.io/vain/2016/11/09/关于Git协作，除了知道merge，你可能还需要知道rebase/index.html">
+<meta property="og:site_name" content="疯子的小站">
+<meta property="og:description" content="开篇之前，我们来说说Git这个东西。至于Git是个什么东西这种问题，我相信不用我说，点开这篇文章的你应该知道的。但是这里，我也不赶尽杀绝，用一句简单粗暴的概念简单介绍一下 ： 
+Git，是一个版本管理工具。
+那么关于Git的基本使用和一些基础概念，这里不是本文讨论的重点。本文也不是一篇Git的科普文，教你Git怎么用啊，环境怎么搭建啊，用Git有什么好处啊…..这种问题。如果你有这种问题，请关闭此">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/git%20logo.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/first%20commit.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/test%20commit.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%203.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%204.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%205.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%206.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%207.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/git%20merge%20&%20rebase.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%201.jpeg">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%202.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%203.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/%E6%97%A0%E5%A5%88.gif">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%204.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%205.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%206.png">
+<meta property="og:updated_time" content="2016-11-17T06:16:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于Git协作，除了知道merge，你可能还需要知道rebase">
+<meta name="twitter:description" content="开篇之前，我们来说说Git这个东西。至于Git是个什么东西这种问题，我相信不用我说，点开这篇文章的你应该知道的。但是这里，我也不赶尽杀绝，用一句简单粗暴的概念简单介绍一下 ： 
+Git，是一个版本管理工具。
+那么关于Git的基本使用和一些基础概念，这里不是本文讨论的重点。本文也不是一篇Git的科普文，教你Git怎么用啊，环境怎么搭建啊，用Git有什么好处啊…..这种问题。如果你有这种问题，请关闭此">
+<meta name="twitter:image" content="http://ofqyh3mgg.bkt.clouddn.com/git%20logo.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/vain/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://vainfeng.github.io/vain/2016/11/09/关于Git协作，除了知道merge，你可能还需要知道rebase/"/>
+
+
+
+
+
+  <title> 关于Git协作，除了知道merge，你可能还需要知道rebase | 疯子的小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/vain/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">疯子的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">永远有人比你更努力</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/vain/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/vain/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/vain/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/vain/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://vainfeng.github.io/vain/vain/2016/11/09/关于Git协作，除了知道merge，你可能还需要知道rebase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="疯子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/vain/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯子的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                关于Git协作，除了知道merge，你可能还需要知道rebase
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-09T16:43:13+08:00">
+                2016-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/vain/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://ofqyh3mgg.bkt.clouddn.com/git%20logo.png" alt="Git Logo"><br>开篇之前，我们来说说<code>Git</code>这个东西。至于<code>Git</code>是个什么东西这种问题，我相信不用我说，点开这篇文章的你应该知道的。但是这里，我也不赶尽杀绝，用一句简单粗暴的概念简单介绍一下 ： </p>
+<pre><code>Git，是一个版本管理工具。
+</code></pre><p>那么关于<code>Git</code>的基本使用和一些基础概念，这里不是本文讨论的重点。本文也不是一篇<code>Git</code>的科普文，教你<code>Git</code>怎么用啊，环境怎么搭建啊，用<code>Git</code>有什么好处啊…..这种问题。如果你有这种问题，请关闭此页面，在浏览器地址栏输入 <a href="http://www.google.com/" target="_blank" rel="external">http://www.google.com/</a> </p>
+<p>Good Luck~</p>
+<h3 id="为什么要写这篇文章"><a href="#为什么要写这篇文章" class="headerlink" title="为什么要写这篇文章"></a>为什么要写这篇文章</h3><p>恩…接触<code>Git</code>有些时日。大大小小的项目也做了不少，基本都是用<code>Git</code>在做代码管理。</p>
+<p>在多人协作开发的时候，最最频繁的操作就是<code>merge</code>了。简单方便快捷。直到遇到一家对<code>Git</code>提交规范严格的公司——要求使用<code>rebase</code>来替代<code>merge</code>操作。</p>
+<p>恩，基于这个原因，就去熟悉原本不怎么熟悉的<code>rebase</code>命令。过程中，踩了不少坑，走了不少弯路，特写下这篇文章，希望能对后来者有所帮助。</p>
+<p>本文内容不深，会从实际的操作和例子出发，旨在为各位看官弄明白<code>git rebase</code>命令的各种相关的问题。</p>
+<h3 id="一般的Git协作流程"><a href="#一般的Git协作流程" class="headerlink" title="一般的Git协作流程"></a>一般的Git协作流程</h3><p>说是一般的，其实只是我本人见过的一些项目以来的<code>Git</code>的管理的流程。见识有限，给大家分享的，只是我实践过可行性比较好的方案。各位看官看完后可以做个参考，有什么不对的或者疑问，欢迎联系我，或者留言评论，先行谢过~~~</p>
+<a id="more"></a>
+<p>恩，一个成规模的项目一般的<code>Git</code>的分支结构应该是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">master    //对应线上产品的代码版本</div><div class="line">dev       //开发总分支</div><div class="line">module1    //新feature分支</div><div class="line">module2    //新feature分支</div><div class="line">....</div></pre></td></tr></table></figure>
+<p><code>master</code> :  这个分支主要对应的线上的产品的代码，如果APP上线后收到反馈，出现了Bug,需要立马修复，那么基于这个分支新建一个新的分支去解决Bug。总之，这个分支总是映射现在的项目的线上的代码，正常情况下只合并<code>dev</code>上的代码</p>
+<p><code>dev</code>： 总的开发分支。当开发新版本的时候，细分的每个feature,都会去基于这个分支去新建一个分支，然后再去开发。</p>
+<p><code>module</code>： 具体的功能分支。</p>
+<p>新版本的开发应该是先由<code>dev</code>分支牵出各种<code>module</code>分支，各个<code>module</code>分支先后完成后再<code>merge</code>到<code>dev</code>分支（当然，这当中涉及到code reviewer之类的流程）。最终是从<code>dev</code>分支上打包测试。没有问题之后再<code>merge</code>到<code>master</code>上。恩，至少之前我就是这么干的。</p>
+<h3 id="merge-和-rebase简述"><a href="#merge-和-rebase简述" class="headerlink" title="merge 和 rebase简述"></a>merge 和 rebase简述</h3><p>用过<code>git</code>的话应该都知道，<code>git</code>的世界里，分支是一个很基础的概念。可以让你在不干扰现有版本的情况下去做你想做的事情，事情做完之后再合并回你的主分支。</p>
+<p>那么分支和分支之间的合并，也就是我们经常会用到的<code>merge</code>命令。</p>
+<p>当你有两个分支，一个主分支<code>master</code>（当然，你可以叫任何名字），一个从<code>master</code>上牵出来的子分支branchA。当你想要将branchA的改动合并到<code>master</code>上时，你大概需要用如下两个命令：</p>
+<pre><code>git checkout master // 将当前分支切换到master分支
+git merge branchA  //合并branchA分支
+</code></pre><p>那么，除了<code>merge</code>我们知道是合并之后，今天介绍另外一种合并的方式，上面的命令也可以这么写：</p>
+<pre><code>git checkout master // 第一步一样，切换到master分支
+git rebase branchA  //合并branchA分支
+</code></pre><p>将上面的<code>merge</code>替换成<code>rebase</code>就好啦。然后你将看到，两种方式最后产生的结果并无区别，两个分支的内容确实合并在了一起。<br>合并的过程中可能会有冲突，这个时候需要你去手动解决冲突再次提交。</p>
+<pre><code>无论是merge还是rebase，都是一个主动的操作。
+当你需要合并另一个分支的时候，就会将你要合并的分支（目标分支），合并到你当前所在的分支。
+</code></pre><h3 id="merge-和rebase-使用对比"><a href="#merge-和rebase-使用对比" class="headerlink" title="merge 和rebase 使用对比"></a>merge 和rebase 使用对比</h3><p><code>rebase</code>命令在中文的<code>Pro.Git-zh_CN.pdf 中文手册</code>中，翻译成衍合。乍一看不怎么好理解。</p>
+<p>在一些我使用的<code>git</code>图形化工具软件的时候，<code>rebase</code>翻译成变基（比如本人使用的SourceTree）。<br>What the fuck ??? 就真的不怕人想歪么….所以，更加不好理解。</p>
+<p>那么<code>rebase</code>到底怎么理解呢？它跟<code>merge</code>又有什么区别？</p>
+<p>先回答第二个问题，<code>rebase</code>和<code>merge</code>的作用都一样，能帮助你在当前分支合并另一个分支的内容。他们唯一的区别体现在这个分支的提交历史上。我们知道，你的每次一个<code>commit</code>，每一次<code>merge</code>都会在<code>git</code>的版本历史（版本树）中有明确的记录，像是脚印一样，这样方面我们浏览这个版本的前世今生。</p>
+<p><code>rebase</code>的操作会让你的版本一直保持一个比较干净的线性结构往下发展，而<code>merge</code>不会。</p>
+<h4 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h4><p>好的，我们来写一个例子：</p>
+<p>首先，我们在本地的一个随便找一个文件夹新建一个<code>git</code>仓库，恩…文件夹的名字就叫test好了。</p>
+<pre><code>git init
+</code></pre><p>然后，我们先做一次提交，提交内容，我们随便新建一个文件</p>
+<pre><code>vi a.txt
+git add *
+git commit -m &quot;first commit&quot;
+</code></pre><p>执行完上面的命令如果不出意外的话，这个工程如果使用你的第三方图形化工具来看的话，应该是这样（我这里用的是SrouceTree）：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/first%20commit.png" alt="first commit"><br>默认帮你创建了一个<code>master</code>分支，并且这个分支上有你的一个提交历史。</p>
+<p>接下来，我们新建一个分支<code>test</code>，并且在这个分支上新建一个文件b.txt，然后提交，如果不出意外，你会得到这样：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/test%20commit.png" alt="test commit"></p>
+<p>之后，我们分别在各自两个分支上做几次各自不同内容的提交，让两个分支的差异越来越大 ：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%203.png" alt="source tree 3"><br>恩，我们先在<code>test</code>分支上提交了一次，内容是</p>
+<pre><code>update b.txt
+</code></pre><p> 然后我们切回<code>master</code>分支，分别前后做了两次提交，内容分别是</p>
+<pre><code>update a.txt
+create c.txt
+</code></pre><p>OK ,那么现在的情况就是，<code>master</code>上有a.txt、c.txt两个文件。<code>test</code>分支上有a.txt（<code>test</code>从<code>master</code>新牵出的时候，就带了a.txt）、b.txt两个文件。</p>
+<p>好的，现在我们按照传统的方式<code>merge</code>来将两个分支合并，看看结果怎么样：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%204.png" alt="source tree 4"><br>我们先在从<code>master</code>分支上执行了<code>merge</code>命令，合并了<code>test</code>分支上的内容，继而又继续提交了一次更新，更新内容为</p>
+<pre><code>update a.txt
+</code></pre><p>以上，就是一个简单的<code>merge</code>操作的流程，经历了那么多的操作后，回顾整个版本库的提交历史可以发现，出现了两条线，一条蓝色（<code>master</code>）、一条红色(<code>test</code>)。</p>
+<p>并且由于<code>merge</code>的操作，这两条分支存在两个交点，一个是从<code>test</code>牵出来的时候跟<code>master</code>产品的交点，一个是由<code>merge</code>操作，同<code>master</code>产生的交点。</p>
+<h4 id="rebase"><a href="#rebase" class="headerlink" title="rebase"></a>rebase</h4><p>好的，还是刚刚那个demo,让我们用<code>rebase</code>的方式来比较一下区别。</p>
+<p>我们新建一个分支，叫做<code>rebaseDemo</code>,并且在这个新分支上做一些提交：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%205.png" alt="source tree 5"></p>
+<p>我们先在<code>rebaseDemo</code>上做了两次提交，一次新建了一个d.txt文件，一次修改了d.txt文件。</p>
+<p>然后切换回<code>master</code>,做了一次提交，新建了一个e.txt文件。</p>
+<p>先在我们执行一下<code>rebase</code>操作，看看会发生什么：</p>
+<pre><code>git checkout master // 切换回master
+git rebase rebaseDemo // 执行rebase命令
+</code></pre><p><img src="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%206.png" alt="source tree 6"><br>当我们运行完<code>rebase</code>命令后再回去看我们发现，整个版本树的分支只保留了一条，也不会出现第二条分支，更别说分支交错的情况了。那我们来看看<code>master</code>上的内容:<br><img src="http://ofqyh3mgg.bkt.clouddn.com/source%20tree%207.png" alt="source tree 7"></p>
+<p>确实合并了<code>rebaseDemo</code>中新建的文件d.txt。从结果出发，无论是<code>merge</code>还是<code>rebase</code>达到的效果其实是一致的。</p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>从结果来看，我们对比一下两个种方式产生的结果：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/git%20merge%20&amp;%20rebase.png" alt="git merge &amp; rebase"></p>
+<p>左边的是<code>merge</code>操作，右边的是<code>rebase</code>操作。我们可以一目了然的看到，使用<code>rebase</code>衍合操作更能产生干净的、线性的、可读性高的文件版本树。这对于文件的管理是非常有帮助的。</p>
+<p>所以，当协作人员过多的时候，使用<code>rebase</code>来替换掉<code>merge</code>其实是有好处的。</p>
+<p>如果你只是想弄懂<code>merge</code>和<code>rebase</code>有什么区别的话，那么看到这里，其实能够解答你的这个问题了。</p>
+<p>如果你跟我一样，对这里面的原理有一些好奇心的话，那么不妨继续看下去，我将深入对里面的实现一一分析，引入自己的问题和看法。</p>
+<h3 id="深入细节"><a href="#深入细节" class="headerlink" title="深入细节"></a>深入细节</h3><p>假设这是我们的一个版本树：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%201.jpeg" alt="pro git 1"></p>
+<p><code>merge</code>命令，它会把两个分支最新的快照（C3和C4）以及二者共同的祖先（C2）进行三方合并，达到整合分支的目的。像这样：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%202.png" alt="pro git 2"></p>
+<p>如果C4想要整合C3的分支，那么通过<code>rebase</code>的方式，其实就是C3里产生的变化的补丁重新在C4的基础上打一遍，相当于C3中提交的变动在C4中重新重新执行了一遍。</p>
+<p><code>rebase</code>会回到两个分支（当前所在的分支和你想要<code>rebase</code>的分支）的共同祖先，提取当前所在分支每次提交时产生的差异（diff）,把这些差异分别保存到临时文件里，然后从当前分支转到你需要<code>rebase</code>的分支，依次序的使用每一个差异补丁文件。like this :<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%203.png" alt="pro git 3"></p>
+<p>这个图就是在C3所在的分支中执行了</p>
+<pre><code>git rebase master // master 这里是C4
+</code></pre><p>这个时候C3的分支处整个版本树的最前面，<code>master</code>落后一个版本，这个时候如果想让<code>master</code>保持最新的版本库内容，你需要切换回<code>master</code>分支并且执行</p>
+<pre><code>git merge [C3 branch name]
+</code></pre><p>但是这个时候的<code>merge</code>其实只是把当前的<code>[HEAD]</code>指针往前移了一个单位而已，并没有做任何合并的动作，这种合并，一般称之为快进合并。</p>
+<p>另外一种方式就是，当前分支是<code>master</code>,并且在<code>master</code>上执行了<code>rebase</code>其他分支的操作，这个时候如果<code>rebase</code>成功,则<code>master</code>分支就会领先目标分支一个版本。</p>
+<p>但是在实际开发流程中，<code>master</code>一般不被允许这样直接去整合另外的分支。所以实际操作中，还是使用第一种方式。</p>
+<h3 id="还要merge做什么？"><a href="#还要merge做什么？" class="headerlink" title="还要merge做什么？"></a>还要merge做什么？</h3><p>我们知道<code>merge</code>和<code>rebase</code>的区别啦。也知道使用<code>rebase</code>的种种好处。但是我们的还是要思考一个问题。</p>
+<p><code>rebase</code>好处这么多，那是不是可以替代<code>merge</code>了？以后一直用<code>rebase</code>就好了。</p>
+<p>如果你这样想，那就真的是too young too naive了。<br>存在必定有它的道理，不然人家干吗弄两个命令出来。<br><img src="http://ofqyh3mgg.bkt.clouddn.com/%E6%97%A0%E5%A5%88.gif" alt="however"></p>
+<p>事实上，在使用<code>rebase</code>的时候我们的遵循这样一个原则：</p>
+<pre><code>永远不要rebase那些已经推送到公共仓库的更新
+</code></pre><p>在<code>rebase</code>的时候，实际上抛弃了一些现存的commit而创造了一些类似但是不同的新的commit。如果你把这些commit推送到服务器上，你的小伙伴<code>pull</code>下来并在这个基础上进行开发并提交了新的commit，然后你用<code>rebase</code>重写这些commit再推送一次，你的小伙伴就不得不重新合并他们的工作，这样会对别人的理解造成困扰。举个栗子：</p>
+<p>你新加入一个项目组。老大给了你项目的git地址。OK，毫无疑问，你第一步就是把项目clone到本地，然后你对这个本地仓库做了一些新的功能并且暂时提交到了本地：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%204.png" alt="pro git 4"><br>你总共提交了两个commit到你的本地（C2和C3）。</p>
+<p>那么在你开发的时候，团队其他的小伙伴也在同时做着另外的开发，并且将这些改动合并提交到了服务器上。然后通知你，服务器上有些改动，你更新一下：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%205.png" alt="pro git 5"><br>服务器上被其他小伙伴更新到了C6。<br>这个时候你本地还是基于C1更新到了C3。<br>这个时候你合并服务器的版本产生了C7。</p>
+<p>看上去一切正常。但是如果这个时候，你的小伙伴觉得他之前的提交用的是<code>merge</code>，觉得稍微有些不妥，准备用<code>rebase</code>替换掉服务器上的提交历史，让提交历史看上去更友好：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/pro%20git%206.png" alt="pro git 6"></p>
+<p>服务器上的提交用<code>rebase</code>覆盖了之后变成了C4。<br>这个时候对于你来说，你需要再次合并这个新内容——即使内容没有什么改变。<code>rebase</code>会改变那些commit的SHA-1校验值，这样<code>Git</code>会把它们当做新的commit(尽管你的本地早已有了C4的内容)。</p>
+<p>为了保持代码同步，你迟早需要并入其他小伙伴提交的内容。上面这种情况会让你的本地的提交历史里面同时出现C4和C4‘，这两个commit有不一样的SHA-1校验值，但却拥有同样的作者、日期和commit说明。这就是问题，这样的提交历史如果提交到了服务器，别的人再去合并你的代码到他们自己本地的电脑上，则每个人都会有这样一个莫名的提交。</p>
+<p>关于<code>rebase</code>的使用，我们更应该把它当成一种在提交到服务器之前清理本地提交历史的手段，而不当成合并的唯一手段。</p>
+<h3 id="sourceTree使用rebase"><a href="#sourceTree使用rebase" class="headerlink" title="sourceTree使用rebase"></a>sourceTree使用rebase</h3><p>额…..我觉得还是啰嗦一下吧。关于sourceTree的一些使用。英文好的可以移步去这个网址看一下。<br><a href="http://blogs.atlassian.com/2014/06/interactive-rebase-sourcetree/" target="_blank" rel="external">Interactive rebase in SourceTree</a></p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>讲真，非常感谢屏幕前你的看完这篇冗长的文章。写的东西有人看，认真的看，没有什么比这个更欣慰的了。</p>
+<p>关于<code>rebase</code>就讲到这里啦。总的来说是啰嗦了一点，但是我认为还是很有必要的。<br>很多时候，我们评价一段好的代码。我们看它的健壮性，可维护性，可拓展性…..<br>那么同样，一个优秀的工程师也是方方面面的，做项目不同于你写demo。追求团队的效率，优化整个团队的工作习惯，正是作为一个团队成员，从这种一点一滴的小事去理解，去分享的。</p>
+<p>By the way,有任何疑问或者是有讨论的，欢迎联系或者留言:</p>
+<pre><code>QQ : 543313167
+weChat : vain_care
+mail : zf1448@gmail.com
+</code></pre><p>祝好！</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>西兰花和鸡胸肉价格都涨了！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="http://ofqyh3mgg.bkt.clouddn.com/wechat.jpeg" alt="疯子 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="http://ofqyh3mgg.bkt.clouddn.com/aliPay.jpeg" alt="疯子 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/vain/2016/11/07/RxJava操作符-变换操作符（二）/" rel="next" title="RxJava操作符---变换操作符（二）">
+                <i class="fa fa-chevron-left"></i> RxJava操作符---变换操作符（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/vain/2016/11/17/404/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/vain/images/avatar.gif"
+               alt="疯子" />
+          <p class="site-author-name" itemprop="name">疯子</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个搞事的程序猿</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/vain/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要写这篇文章"><span class="nav-number">1.</span> <span class="nav-text">为什么要写这篇文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一般的Git协作流程"><span class="nav-number">2.</span> <span class="nav-text">一般的Git协作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#merge-和-rebase简述"><span class="nav-number">3.</span> <span class="nav-text">merge 和 rebase简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#merge-和rebase-使用对比"><span class="nav-number">4.</span> <span class="nav-text">merge 和rebase 使用对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#merge"><span class="nav-number">4.1.</span> <span class="nav-text">merge</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rebase"><span class="nav-number">4.2.</span> <span class="nav-text">rebase</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">4.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深入细节"><span class="nav-number">5.</span> <span class="nav-text">深入细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#还要merge做什么？"><span class="nav-number">6.</span> <span class="nav-text">还要merge做什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sourceTree使用rebase"><span class="nav-number">7.</span> <span class="nav-text">sourceTree使用rebase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">8.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯子</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/vain/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/vain/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

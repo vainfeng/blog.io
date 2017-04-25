@@ -1,0 +1,780 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vain/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vain/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/vain/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/vain/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文将介绍RxJava的官网的文档记录在案的常用的操作符和用法，以及自己的一些思考。这篇文章的内容基于
+12compile &amp;apos;io.reactivex:rxandroid:1.2.1&amp;apos;compile &amp;apos;io.reactivex:rxjava:1.1.6&amp;apos;
+这两个版本。如果队长本文内容发现有API不一致的情况，请确定一下导入的库的版本是否一致。
+这个系列不涉及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava操作符---创建操作符（一）">
+<meta property="og:url" content="https://vainfeng.github.io/vain/2016/10/28/RxJava操作符---创建操作符（一）/index.html">
+<meta property="og:site_name" content="疯子的小站">
+<meta property="og:description" content="本文将介绍RxJava的官网的文档记录在案的常用的操作符和用法，以及自己的一些思考。这篇文章的内容基于
+12compile &amp;apos;io.reactivex:rxandroid:1.2.1&amp;apos;compile &amp;apos;io.reactivex:rxjava:1.1.6&amp;apos;
+这两个版本。如果队长本文内容发现有API不一致的情况，请确定一下导入的库的版本是否一致。
+这个系列不涉及">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/from%E6%93%8D%E4%BD%9C%E7%AC%A6.png">
+<meta property="og:image" content="http://ofqyh3mgg.bkt.clouddn.com/interval%20%E9%87%8D%E8%BD%BD.png">
+<meta property="og:updated_time" content="2016-11-07T08:57:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJava操作符---创建操作符（一）">
+<meta name="twitter:description" content="本文将介绍RxJava的官网的文档记录在案的常用的操作符和用法，以及自己的一些思考。这篇文章的内容基于
+12compile &amp;apos;io.reactivex:rxandroid:1.2.1&amp;apos;compile &amp;apos;io.reactivex:rxjava:1.1.6&amp;apos;
+这两个版本。如果队长本文内容发现有API不一致的情况，请确定一下导入的库的版本是否一致。
+这个系列不涉及">
+<meta name="twitter:image" content="http://ofqyh3mgg.bkt.clouddn.com/from%E6%93%8D%E4%BD%9C%E7%AC%A6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/vain/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://vainfeng.github.io/vain/2016/10/28/RxJava操作符---创建操作符（一）/"/>
+
+
+
+
+
+  <title> RxJava操作符---创建操作符（一） | 疯子的小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/vain/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">疯子的小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">永远有人比你更努力</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/vain/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/vain/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/vain/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/vain/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://vainfeng.github.io/vain/vain/2016/10/28/RxJava操作符---创建操作符（一）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="疯子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/vain/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="疯子的小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RxJava操作符---创建操作符（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-28T14:33:16+08:00">
+                2016-10-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/vain/categories/技术/" itemprop="url" rel="index">
+                    <span itemprop="name">技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将介绍RxJava的官网的文档记录在案的常用的操作符和用法，以及自己的一些思考。这篇文章的内容基于</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">compile &apos;io.reactivex:rxandroid:1.2.1&apos;</div><div class="line">compile &apos;io.reactivex:rxjava:1.1.6&apos;</div></pre></td></tr></table></figure>
+<p>这两个版本。如果队长本文内容发现有API不一致的情况，请确定一下导入的库的版本是否一致。</p>
+<p>这个系列不涉及对Rx中一些概念的解释，比如什么是Observable、操作符是什么这类问题。关于Rx的介绍和入门，建议看官去看一下这篇文章——<a href="http://gank.io/post/560e15be2dca930e00da1083" target="_blank" rel="external">给Android开发者的RxJava详解</a>。</p>
+<p>OK，不多扯了，下面开始正式实践了….</p>
+<h4 id="create"><a href="#create" class="headerlink" title="create"></a>create</h4><p>create操作符是最基础的一个操作符之一，使用起来并不复杂。接收一个<code>OnSubscribe</code>类型的参数，其实是个接口，一般用匿名类的方式new出来即可。看代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Observable.create(new Observable.OnSubscribe&lt;String&gt;() &#123;</div><div class="line">            @Override</div><div class="line">            public void call(Subscriber&lt;? super String&gt; subscriber) &#123;</div><div class="line">               if (!subscriber.isUnsubscribed()) &#123;//判断观察者是否取消订阅</div><div class="line">                    subscriber.onNext(&quot;test&quot;);</div><div class="line">                    subscriber.onCompleted();</div><div class="line">                &#125; else &#123;</div><div class="line">                    Log.d(TAG, &quot;unSubscribe&quot;);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;)</div><div class="line">                .subscribe(new Action1&lt;String&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void call(String s) &#123;</div><div class="line">                        Log.d(TAG, s);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>唯一值得说一下的就是，在有些你需要关心观察者取消订阅的场景下时，你在<code>OnSubscribe</code>中判断一下观察者是否取消订阅，以免不必要的资源浪费。</p>
+<a id="more"></a>
+<h4 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h4><p>defer操作接收一个<code>Func0</code>接口实现类。需要返回一个<code>Observable</code>。直到有订阅者订阅的时候，才去执行<code>Func0</code>的工厂方法生成一个新的<code>Observable</code>。每次订阅都是一个新的数据。看代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">str = &quot;aaa&quot;;</div><div class="line">Observable  observable = Observable.defer(new Func0&lt;Observable&lt;String&gt;&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public Observable&lt;String&gt; call() &#123;</div><div class="line">        //被订阅的时候才执行</div><div class="line">        return Observable.just(str);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">str = &quot;bbb&quot;;</div><div class="line">observable.subscribe(new Action1() &#123;</div><div class="line">    @Override</div><div class="line">    public void call(Object o) &#123;</div><div class="line">    //输出 “bbb” 因为是在订阅的时候才执行</div><div class="line">    //这个时候str已经被赋值为 bbb</div><div class="line">        Log.d(TAG, &quot;defer : &quot; + str);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h4 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h4><p>创建一个不发射数据但是正常终止的<code>Observable</code>。<br>当有订阅者订阅的时候，因为没有数据，只会回调<code>onComplete</code>函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Observable.empty()</div><div class="line">               .subscribe(new Subscriber&lt;Object&gt;() &#123;</div><div class="line">                   @Override</div><div class="line">                   public void onCompleted() &#123;</div><div class="line">                   //只会执行onCompleted方法</div><div class="line">                       Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   @Override</div><div class="line">                   public void onError(Throwable e) &#123;</div><div class="line">                       //不会执行</div><div class="line">                       Log.d(TAG, &quot;onError&quot;);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   @Override</div><div class="line">                   public void onNext(Object o) &#123;</div><div class="line">                       //不会执行</div><div class="line">                       Log.d(TAG, &quot;onNext&quot;);</div><div class="line">                   &#125;</div><div class="line">               &#125;);</div></pre></td></tr></table></figure>
+<h4 id="nerver"><a href="#nerver" class="headerlink" title="nerver"></a>nerver</h4><p>创建一个不发射数据也不终止的<code>Observable</code>。<br>不会调用订阅者的任何方法。</p>
+<h4 id="error"><a href="#error" class="headerlink" title="error"></a>error</h4><p>创建一个不发射数据以一个错误终止的<code>Observable</code>。<br>该操作符需要传入一个<code>Throwable</code>对象。只会回调订阅者的<code>OnError</code>方法，并将传入的<code>Throwable</code>对象作为入参传入。</p>
+<h4 id="from"><a href="#from" class="headerlink" title="from"></a>from</h4><p>好的，终于讲到这个操作符了。<code>from</code>操作符在所有创建类操作符中，出场率算是比较高的了。我们先来看看这个操作符有多少重载：<br><img src="http://ofqyh3mgg.bkt.clouddn.com/from%E6%93%8D%E4%BD%9C%E7%AC%A6.png" alt="img"></p>
+<p>那么我们归纳下来主要有三种:java concurrent包下的<code>Future</code>对象。数组 <code>Array</code>对象。以及 <code>Iterator</code>也就是我们一般使用的集合对象。日常使用还是用数组和集合会多一些。<br><code>from</code>操作符可以转换数组和集合对象的中的每一个数据单独发送。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">String[] array = new String[]&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;&#125;;</div><div class="line">        Observable.from(array)</div><div class="line">                .subscribe(new Subscriber&lt;String&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onCompleted() &#123;</div><div class="line">                        Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onError(Throwable e) &#123;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onNext(String s) &#123;</div><div class="line">                        Log.d(TAG, &quot;onNext : &quot; + s);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>上面这段结果的输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">onNext : a</div><div class="line">onNext : b</div><div class="line">onNext : c</div><div class="line">onNext : d</div><div class="line">onCompleted</div></pre></td></tr></table></figure>
+<h4 id="interval"><a href="#interval" class="headerlink" title="interval"></a>interval</h4><p>这个操作符是帮助你创建一个按照指定时间间隔发射一个递增的整数序列的<code>Observable</code>。<br><code>interval</code>默认在<code>computation</code>调度器上执行，你可以传入参数来指定调度器。<br>在一些比如倒计时的定时场景下还是很有用的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Observable.interval(1, TimeUnit.SECONDS)</div><div class="line">                .subscribe(new Subscriber&lt;Long&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onCompleted() &#123;</div><div class="line">                        Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onError(Throwable e) &#123;</div><div class="line">                        Log.d(TAG, &quot;onError&quot;);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onNext(Long aLong) &#123;</div><div class="line">                        Log.d(TAG, &quot;onNext : &quot; + aLong);</div><div class="line"></div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>上面这段代码的输出是 : </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">onNext : 0</div><div class="line">onNext : 1</div><div class="line">onNext : 2</div><div class="line">onNext : 3</div><div class="line">...//一直递增</div></pre></td></tr></table></figure>
+<p>那么怎么停下来呢？调用<code>subScribe</code>方法来订阅之后会返回一个<code>Subscription</code>对象，通过这个对象的<code>unsubscribe</code>方法来停止数据的发射。</p>
+<hr>
+<p>这里还有一种场景给各位看官提一下。</p>
+<p>在一个<code>Activity</code>中开始了一个<code>interval</code>的指定间隔的循环操作，这个时候如果你的<code>Activity</code>已经<code>onDestory</code>之后，这里会不会有内存泄露的问题呢？</p>
+<p>实践下来我得出的结论是会的。如果你没有在你的<code>onDestory</code>中去调用<code>unSubscribe</code>方法，则<code>interval</code>还是会继续执行。造成内存泄露。</p>
+<hr>
+<p><code>interval</code>操作符还提供一个重载的方法，可以延迟第一个数据的发射时间。<br><img src="http://ofqyh3mgg.bkt.clouddn.com/interval%20%E9%87%8D%E8%BD%BD.png" alt="interval重载"><br>就是在<code>initialDelay</code>时间后，开始发射第一个数据。之后每次按<code>period</code>时间间隔后，依次发射递增的数据序列。</p>
+<h4 id="just"><a href="#just" class="headerlink" title="just"></a>just</h4><p><code>just</code>操作符会创建一个发射指定数据的<code>Observable</code>。<br>类似于<code>from</code>操作符，但是<code>from</code>是将数据或者集合的元素逐一取出，逐一发射，而<code>just</code>只是原样发射，将数组当成单个数据去看待。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">String[] array = new String[]&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;&#125;;</div><div class="line">        Observable.just(array)</div><div class="line">                .subscribe(new Subscriber&lt;String[]&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onCompleted() &#123;</div><div class="line">                        Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onError(Throwable e) &#123;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onNext(String[] strings) &#123;</div><div class="line">                        Log.d(TAG, &quot;onNext : &quot; + strings);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> //这里打印的是数组的内存地址。</div><div class="line"> //这里会把数组看做一个单独的数据处理，这是跟from最大的区别</div><div class="line">onNext : [Ljava.lang.String;@3838ba49</div><div class="line">onCompleted</div></pre></td></tr></table></figure>
+<h4 id="range"><a href="#range" class="headerlink" title="range"></a>range</h4><p>这个操作符会创建一个发射范围内有序整数序列的一个<code>Observable</code>。<br>接受两个参数，一个是范围的起始值,一个是范围的数据的数目。如果你将第二个参数传入0，将导致<code>Observable</code>不发射任何数据，如果你传入负数，会抛出异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Observable.range(1, 24)</div><div class="line">               .subscribe(new Subscriber&lt;Integer&gt;() &#123;</div><div class="line">                   @Override</div><div class="line">                   public void onCompleted() &#123;</div><div class="line">                       Log.d(TAG, &quot;onCompleted&quot;);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   @Override</div><div class="line">                   public void onError(Throwable e) &#123;</div><div class="line"></div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   @Override</div><div class="line">                   public void onNext(Integer integer) &#123;</div><div class="line">                       Log.d(TAG, &quot;onNext : &quot; + integer);</div><div class="line">                   &#125;</div><div class="line">               &#125;);</div></pre></td></tr></table></figure>
+<p>输出 ： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">onNext : 1</div><div class="line">onNext : 2</div><div class="line">... // 不断递增</div><div class="line">onNext : 24</div><div class="line">onCompleted</div></pre></td></tr></table></figure>
+<hr>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>关于创建操作符除了上述这些还有<code>start``timer</code>等不太常用且使用简单的操作符（可能是我的使用场景比较有局限性），暂时没有介绍。有需要的同学可以去网上找找。^_^。</p>
+<p>最后，衷心的希望本篇文章会对你所有帮助。</p>
+<p>好了，我得去准备变换操作符的内容了….古德拜</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>西兰花和鸡胸肉价格都涨了！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="http://ofqyh3mgg.bkt.clouddn.com/wechat.jpeg" alt="疯子 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="http://ofqyh3mgg.bkt.clouddn.com/aliPay.jpeg" alt="疯子 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/vain/2016/10/27/常用ADB命令/" rel="next" title="常用ADB命令">
+                <i class="fa fa-chevron-left"></i> 常用ADB命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/vain/2016/11/07/RxJava操作符-变换操作符（二）/" rel="prev" title="RxJava操作符---变换操作符（二）">
+                RxJava操作符---变换操作符（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/vain/images/avatar.gif"
+               alt="疯子" />
+          <p class="site-author-name" itemprop="name">疯子</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个搞事的程序猿</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/vain/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#create"><span class="nav-number">1.</span> <span class="nav-text">create</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#defer"><span class="nav-number">2.</span> <span class="nav-text">defer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#empty"><span class="nav-number">3.</span> <span class="nav-text">empty</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nerver"><span class="nav-number">4.</span> <span class="nav-text">nerver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#error"><span class="nav-number">5.</span> <span class="nav-text">error</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#from"><span class="nav-number">6.</span> <span class="nav-text">from</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#interval"><span class="nav-number">7.</span> <span class="nav-text">interval</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#just"><span class="nav-number">8.</span> <span class="nav-text">just</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#range"><span class="nav-number">9.</span> <span class="nav-text">range</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number"></span> <span class="nav-text">小结</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">疯子</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vain/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/vain/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/vain/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/vain/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/vain/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
